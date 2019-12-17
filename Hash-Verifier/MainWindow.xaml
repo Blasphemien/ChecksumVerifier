@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hash_Verifier"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Hash Verifier" Height="450" Width="800" Background="White">
     <Grid>
-        
+        <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="224,121,210.333,144.667" VerticalAlignment="center" Height="155" Width="359" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
     </Grid>
 </Window>

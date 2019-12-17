@@ -24,5 +24,16 @@ namespace Hash_Verifier
         {
             InitializeComponent();
         }
+
+        public void FileDropped(object sender, DragEventArgs e)
+        {
+            
+            // Check if the data matches the windows drop format
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)){
+                // Get the filestream
+                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
+                MessageBox.Show(data[0]);
+            }
+        }
     }
 }
