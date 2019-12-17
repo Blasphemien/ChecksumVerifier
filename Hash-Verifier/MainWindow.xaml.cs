@@ -27,13 +27,18 @@ namespace Hash_Verifier
 
         public void FileDropped(object sender, DragEventArgs e)
         {
-            
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)){
-                // Get the filestream
+                // Get data that is in the windows drop format
                 string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
-                MessageBox.Show(data[0]);
+
+                GetHash(data[0]);
             }
+        }
+
+        private Byte GetHash(String data)
+        {
+
         }
     }
 }
