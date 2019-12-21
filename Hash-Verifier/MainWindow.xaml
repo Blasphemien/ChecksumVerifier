@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hash_Verifier"
         mc:Ignorable="d"
-        Title="Hash Verifier" Height="450" Width="800" Background="White">
+        Title="Checksum Verifier" Height="450" Width="800" Background="White" ResizeMode="NoResize">
     <Grid>
-        <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="249,28,184,236" VerticalAlignment="center" Height="155" Width="359" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
-        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="249,183,184,0" Width="auto">
-            <StackPanel Width="304">
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_SHA256"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_SHA1"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_MD5"/>
+        <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="153,10,154,196" VerticalAlignment="top" Height="213" Width="485" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
+        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="153,254,144,10" Width="auto" Height="155">
+            <StackPanel Width="auto">
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_SHA256"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_SHA1"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_MD5"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>
