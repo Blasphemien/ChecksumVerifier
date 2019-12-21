@@ -3,6 +3,8 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hash_Verifier {
     /// <summary>
@@ -17,15 +19,30 @@ namespace Hash_Verifier {
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
                 // Get data that is in the windows drop format
-                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);           
+                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
+                /*var checkBoxList = this.stack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+                foreach(var item in checkBoxList) {
+
+                }*/
                 textBlock_SHA256.Text = "sha256: " + GetHash(data[0], "sha256");
                 textBlock_SHA1.Text = "sha1: " + GetHash(data[0], "sha1");
                 textBlock_MD5.Text = "md5: " + GetHash(data[0], "md5");
             }
         }
 
-        private string GetHash(String data, String hashType) {
-            string checksumType = hashType;
+        private void CreateTextBlock() {
+            TextBlock textBlock = new TextBlock();
+            textBlock.Width = Double.NaN;
+            textBlock.VerticalAlignment = VerticalAlignment.Top;
+            textBlock.HorizontalAlignment = HorizontalAlignment.Left;
+            textBlock.TextWrapping = TextWrapping.NoWrap;
+
+            stack.Children.Add(textBlock);
+        }
+        private string GetHash(String data, String checkSumType) {
+
+            
+          
             Byte[] hashValue = null;
             try {    
                 // Get the data from the file
@@ -33,7 +50,7 @@ namespace Hash_Verifier {
                 //Create filestream
                 FileStream fileStream = fileInfo.Open(FileMode.Open);
                 // Create instance of SHA class
-                switch (checksumType) {
+                switch (checkSumType) {
                     case "sha256": 
                         SHA256 sha256 = SHA256.Create();
                         hashValue = sha256.ComputeHash(fileStream);
