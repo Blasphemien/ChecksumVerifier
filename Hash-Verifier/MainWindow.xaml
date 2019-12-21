@@ -8,11 +8,11 @@
         Title="Hash Verifier" Height="450" Width="800" Background="White">
     <Grid>
         <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="249,28,184,236" VerticalAlignment="center" Height="155" Width="359" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
-        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="149,183,105,0">
-            <StackPanel Width="277">
-                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="501" Height="auto" Margin="-104,0,-38,0" Name="textBlock_SHA1"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="501" Height="auto" Margin="-104,0,-38,0" Name="textBlock_SHA256"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="501" Height="auto" Margin="-104,0,-38,0" Name="textBlock_MD5"/>
+        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="249,183,184,0" Width="auto">
+            <StackPanel Width="304">
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_SHA256"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_SHA1"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" Height="auto" x:Name="textBlock_MD5"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

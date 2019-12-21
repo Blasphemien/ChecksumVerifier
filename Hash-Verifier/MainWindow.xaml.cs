@@ -19,8 +19,8 @@ namespace Hash_Verifier {
                 // Get data that is in the windows drop format
                 string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);           
                 textBlock_SHA256.Text = "sha256: " + GetHash(data[0], "sha256");
-                textBlock_SHA1.Text = ("sha1: " + GetHash(data[0], "sha1"));
-                textBlock_MD5.Text = ("md5: " + GetHash(data[0], "md5"));
+                textBlock_SHA1.Text = "sha1: " + GetHash(data[0], "sha1");
+                textBlock_MD5.Text = "md5: " + GetHash(data[0], "md5");
             }
         }
 
