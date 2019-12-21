@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Hash_Verifier {
     /// <summary>
@@ -12,12 +13,12 @@ namespace Hash_Verifier {
             InitializeComponent();
         }
 
-        public void FileDropped(object sender, DragEventArgs e) {
+        public void FileDropped(object sender, DragEventArgs e) {         
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
                 // Get data that is in the windows drop format
-                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
-                MessageBox.Show("SHA256: " + GetHash(data[0]));
+                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);           
+               textBlock_CheckSum.Text = ("SHA256: " + GetHash(data[0]));
             }
         }
 
