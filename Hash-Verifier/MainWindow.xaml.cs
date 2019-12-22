@@ -15,58 +15,71 @@ namespace Hash_Verifier {
             InitializeComponent();
         }
 
-        public void FileDropped(object sender, DragEventArgs e) {         
+        // Main function
+        public void FileDropped(object sender, DragEventArgs e) {
+            ClearTextBlock();
+
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+
                 // Get data that is in the windows drop format
                 string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
-                /*var checkBoxList = this.stack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
-                foreach(var item in checkBoxList) {
 
-                }*/
-                textBlock_SHA256.Text = "sha256: " + GetHash(data[0], "sha256");
-                textBlock_SHA1.Text = "sha1: " + GetHash(data[0], "sha1");
-                textBlock_MD5.Text = "md5: " + GetHash(data[0], "md5");
+                // Gets the check boxes that are checked
+                IEnumerable<CheckBox> checkBoxCheckedList = this.checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+
+                // Check if a checkbox has been checked
+                if (!checkBoxCheckedList.Any()) {
+                    MessageBox.Show("Please select what checksums you would like to view");
+                    return;
+                }
+                GetHash(data[0], checkBoxCheckedList);
             }
         }
 
-        private void CreateTextBlock() {
+        // Creates a new textbox dynamically
+        private TextBlock CreateTextBlock(string name) {
             TextBlock textBlock = new TextBlock();
             textBlock.Width = Double.NaN;
             textBlock.VerticalAlignment = VerticalAlignment.Top;
             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
             textBlock.TextWrapping = TextWrapping.NoWrap;
-
-            stack.Children.Add(textBlock);
+            textBlock.Name = name;
+            textBoxStack.Children.Add(textBlock);
+            return textBlock;
         }
-        private string GetHash(String data, String checkSumType) {
+        private string GetHash(String data, IEnumerable<CheckBox> checkBoxCheckedList) {
+            // Copy IEnum so its not changes when enumerating
+            List<CheckBox> checkBoxList = new List<CheckBox>();
+            checkBoxList = checkBoxCheckedList.ToList();
 
-            
-          
+            // Store checkSum values   
             Byte[] hashValue = null;
-            try {    
-                // Get the data from the file
-                FileInfo fileInfo = new FileInfo(data);
-                //Create filestream
-                FileStream fileStream = fileInfo.Open(FileMode.Open);
-                // Create instance of SHA class
-                switch (checkSumType) {
-                    case "sha256": 
+
+            // Get the data from the file
+            FileInfo fileInfo = new FileInfo(data);            
+            FileStream fileStream = fileInfo.Open(FileMode.Open);
+
+            // Gets checksums for for selected types
+            try {          
+                foreach (CheckBox item in checkBoxList) {
+                    if(item.Name == "checkBox_sha256") {
                         SHA256 sha256 = SHA256.Create();
                         hashValue = sha256.ComputeHash(fileStream);
-                        fileStream.Close();
-                        break;
-                    case "sha1":
+                        CreateTextBlock("textBlock_SHA256").Text = "SHA256: " + ConvertBytesToString(hashValue);                      
+                    }
+                    if(item.Name == "checkBox_sha1") {
                         SHA1 sha11 = SHA1.Create();
                         hashValue = sha11.ComputeHash(fileStream);
-                        fileStream.Close();
-                        break;
-                    case "md5":
+                        CreateTextBlock("textBlock_SHA1").Text = "SHA1: " + ConvertBytesToString(hashValue);
+                    }
+                    if(item.Name == "checkBox_md5") {
                         MD5 md5 = MD5.Create();
                         hashValue = md5.ComputeHash(fileStream);
-                        fileStream.Close();
-                        break;
+                        CreateTextBlock("textBlock_MD5").Text = "MD5: " + ConvertBytesToString(hashValue);
+                    }                                     
                 }
+                fileStream.Close();
                 return ConvertBytesToString(hashValue);
             }
             catch (IOException e) { return e.ToString(); }
@@ -79,6 +92,9 @@ namespace Hash_Verifier {
                 hashValue += byteIndex.ToString("x2");
             }
             return hashValue;
+        }
+        private void ClearTextBlock() {
+            textBoxStack.Children.Clear();
         }
     }
 }

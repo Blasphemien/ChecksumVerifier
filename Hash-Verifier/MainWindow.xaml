@@ -9,13 +9,11 @@
     <Grid Name="myGrid">
         <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="153,10,154,196" VerticalAlignment="top" Height="213" Width="485" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
         <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="153,254,144,10" Width="auto" Height="155">
-            <StackPanel Width="auto">
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_SHA256"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_SHA1"/>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="TextBlock" VerticalAlignment="Top" Width="Auto" x:Name="textBlock_MD5"/>
+            <StackPanel Width="auto" Name="textBoxStack">
+                
             </StackPanel>
         </ScrollViewer>
-        <StackPanel Name="stack">
+        <StackPanel Name="checkBoxStack">
             <CheckBox Content="SHA256" Name="checkBox_sha256" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="SHA1" Name="checkBox_sha1" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="MD5" Name="checkBox_md5" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.634,-1.931"/>
