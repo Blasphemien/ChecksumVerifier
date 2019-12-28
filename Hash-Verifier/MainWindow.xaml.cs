@@ -16,7 +16,7 @@ namespace Hash_Verifier {
         }
 
         // Main function
-        public void FileDropped(object sender, DragEventArgs e) {
+        void FileDropped(object sender, DragEventArgs e) {
             ClearTextBlock();
 
             // Check if the data matches the windows drop format
@@ -38,7 +38,7 @@ namespace Hash_Verifier {
         }
 
         // Creates a new textbox dynamically
-        private TextBlock CreateTextBlock(string name) {
+        TextBlock CreateTextBlock(string name) {
             TextBlock textBlock = new TextBlock();
             textBlock.Width = Double.NaN;
             textBlock.VerticalAlignment = VerticalAlignment.Top;
@@ -48,51 +48,50 @@ namespace Hash_Verifier {
             textBoxStack.Children.Add(textBlock);
             return textBlock;
         }
-        private string GetHash(String data, IEnumerable<CheckBox> checkBoxCheckedList) {
+
+        private void GetHash(string data, IEnumerable<CheckBox> checkBoxCheckedList) {
             // Copy IEnum so its not changes when enumerating
             List<CheckBox> checkBoxList = new List<CheckBox>();
             checkBoxList = checkBoxCheckedList.ToList();
+            Dictionary<string, string> algorithms = new Dictionary<string, string>(); 
+            
+            // Gets checksums for for selected types
+            foreach (CheckBox item in checkBoxList) {
+                if (item.Name == "checkBox_sha256")
+                    algorithms.Add("textBox_SHA256", "SHA256");             
+                if (item.Name == "checkBox_sha1")
+                    algorithms.Add("textBox_SHA1", "SHA1");
+                if (item.Name == "checkBox_md5")
+                    algorithms.Add("textBox_MD5", "MD5");
+            }
+            CalculateHash(data, algorithms);
+        }
 
-            // Store checkSum values   
+        private void CalculateHash(string data, Dictionary<string, string> dictionary) {
             Byte[] hashValue = null;
 
             // Get the data from the file
-            FileInfo fileInfo = new FileInfo(data);            
+            FileInfo fileInfo = new FileInfo(data);
             FileStream fileStream = fileInfo.Open(FileMode.Open);
-
-            // Gets checksums for for selected types
-            try {          
-                foreach (CheckBox item in checkBoxList) {
-                    if(item.Name == "checkBox_sha256") {
-                        SHA256 sha256 = SHA256.Create();
-                        hashValue = sha256.ComputeHash(fileStream);
-                        CreateTextBlock("textBlock_SHA256").Text = "SHA256: " + ConvertBytesToString(hashValue);                      
-                    }
-                    if(item.Name == "checkBox_sha1") {
-                        SHA1 sha11 = SHA1.Create();
-                        hashValue = sha11.ComputeHash(fileStream);
-                        CreateTextBlock("textBlock_SHA1").Text = "SHA1: " + ConvertBytesToString(hashValue);
-                    }
-                    if(item.Name == "checkBox_md5") {
-                        MD5 md5 = MD5.Create();
-                        hashValue = md5.ComputeHash(fileStream);
-                        CreateTextBlock("textBlock_MD5").Text = "MD5: " + ConvertBytesToString(hashValue);
-                    }                                     
-                }
-                fileStream.Close();
-                return ConvertBytesToString(hashValue);
-            }
-            catch (IOException e) { return e.ToString(); }
-            catch (UnauthorizedAccessException e) { return e.ToString(); }
+            
+            foreach(var item in dictionary) {
+                HashAlgorithm algorithm = HashAlgorithm.Create(item.Value);
+                hashValue = algorithm.ComputeHash(fileStream);
+                CreateTextBlock(item.Key).Text = item.Value + ": " + ConvertBytesToString(hashValue);
+            }                     
+            fileStream.Close();                            
         }
+
         private string ConvertBytesToString(Byte[] bytes) {
             string hashValue = null;
+
             // Convert bytes to string in hex format
-            foreach (Byte byteIndex in bytes) {
+            foreach (Byte byteIndex in bytes) 
                 hashValue += byteIndex.ToString("x2");
-            }
+            
             return hashValue;
         }
+
         private void ClearTextBlock() {
             textBoxStack.Children.Clear();
         }
