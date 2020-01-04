@@ -68,18 +68,35 @@ namespace Hash_Verifier {
         }
 
         private void CalculateHash(string data, Dictionary<string, string> dictionary) {
-            Byte[] hashValue = null;
+            FileStream fileStream = null;
+            FileInfo fileInfo = null;
 
-            // Get the data from the file
-            FileInfo fileInfo = new FileInfo(data);
-            FileStream fileStream = fileInfo.Open(FileMode.Open);
-            
-            foreach(var item in dictionary) {
+            try
+            {
+                // Get the data from the file
+                fileInfo = new FileInfo(data);
+                fileStream = fileInfo.Open(FileMode.Open);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            if (fileInfo == null | fileStream == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            foreach (var item in dictionary) {
                 HashAlgorithm algorithm = HashAlgorithm.Create(item.Value);
-                hashValue = algorithm.ComputeHash(fileStream);
+                byte[] hashValue = algorithm.ComputeHash(fileStream);
                 CreateTextBlock(item.Key).Text = item.Value + ": " + ConvertBytesToString(hashValue);
-            }                     
-            fileStream.Close();                            
+            }
+            fileStream.Dispose();
         }
 
         private string ConvertBytesToString(Byte[] bytes) {
