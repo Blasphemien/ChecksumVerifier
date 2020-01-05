@@ -15,32 +15,32 @@ namespace Hash_Verifier {
             InitializeComponent();
         }
 
+
         // Main function
-        void FileDropped(object sender, DragEventArgs e) {
+        private void FileDropped(object sender, DragEventArgs e) {
             ClearTextBlock();
 
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-
                 // Get data that is in the windows drop format
-                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
+                var data = (string[]) e.Data.GetData(DataFormats.FileDrop);
 
                 // Gets the check boxes that are checked
-                IEnumerable<CheckBox> checkBoxCheckedList = this.checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+                var hashOptions = GetHashOptions().ToList();
 
-                // Check if a checkbox has been checked
-                if (!checkBoxCheckedList.Any()) {
-                    MessageBox.Show("Please select what checksums you would like to view");
-                    return;
-                }
-                GetHash(data[0], checkBoxCheckedList);
+                if (!hashOptions.Any())
+                    throw new NullReferenceException();
+                if (data == null)
+                    throw new NullReferenceException();
+
+                GetHash(data[0], hashOptions);
             }
         }
 
         // Creates a new textbox dynamically
-        TextBlock CreateTextBlock(string name) {
-            TextBlock textBlock = new TextBlock();
-            textBlock.Width = Double.NaN;
+        private TextBlock CreateTextBlock(string name) {
+            var textBlock = new TextBlock();
+            textBlock.Width = double.NaN;
             textBlock.VerticalAlignment = VerticalAlignment.Top;
             textBlock.HorizontalAlignment = HorizontalAlignment.Left;
             textBlock.TextWrapping = TextWrapping.NoWrap;
@@ -49,63 +49,73 @@ namespace Hash_Verifier {
             return textBlock;
         }
 
-        private void GetHash(string data, IEnumerable<CheckBox> checkBoxCheckedList) {
-            // Copy IEnum so its not changes when enumerating
-            List<CheckBox> checkBoxList = new List<CheckBox>();
-            checkBoxList = checkBoxCheckedList.ToList();
-            Dictionary<string, string> algorithms = new Dictionary<string, string>(); 
-            
-            // Gets checksums for for selected types
-            foreach (CheckBox item in checkBoxList) {
-                if (item.Name == "checkBox_sha256")
-                    algorithms.Add("textBox_SHA256", "SHA256");             
-                if (item.Name == "checkBox_sha1")
-                    algorithms.Add("textBox_SHA1", "SHA1");
-                if (item.Name == "checkBox_md5")
-                    algorithms.Add("textBox_MD5", "MD5");
-            }
-            CalculateHash(data, algorithms);
+        private IEnumerable<CheckBox> GetHashOptions() {
+            var hashOptions =
+                checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+            return hashOptions;
         }
 
-        private void CalculateHash(string data, Dictionary<string, string> dictionary) {
+        private void GetHash(string data, List<CheckBox> hashOptions) {
+            var algorithms = new Dictionary<string, string>();
+
+            // Gets checksums for for selected types
+            foreach (var item in hashOptions) {
+                if (item.Name == "checkBox_md5")
+                    algorithms.Add("textBox_MD5", "MD5");
+                if (item.Name == "checkBox_sha256")
+                    algorithms.Add("textBox_SHA256", "SHA256");
+                if (item.Name == "checkBox_sha1")
+                    algorithms.Add("textBox_SHA1", "SHA1");
+            }
+
+            if (!algorithms.Any())
+                throw new NullReferenceException();
+
+            foreach (var item in algorithms)
+                CalculateHash(data, item.Key, item.Value);
+        }
+
+        private void CalculateHash(string data, string key, string value) {
             FileStream fileStream = null;
             FileInfo fileInfo = null;
+            byte[] hashValue = null;
+            var algorithm = HashAlgorithm.Create(value);
 
-            try
-            {
+            try {
                 // Get the data from the file
                 fileInfo = new FileInfo(data);
                 fileStream = fileInfo.Open(FileMode.Open);
             }
-            catch (IOException ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            catch (UnauthorizedAccessException ex)
-            {
+            catch (IOException ex) {
                 MessageBox.Show(ex.ToString());
             }
 
-            if (fileInfo == null | fileStream == null)
-            {
+
+            catch (UnauthorizedAccessException ex) {
+                MessageBox.Show(ex.ToString());
+            }
+
+            if ((fileInfo == null) | (fileStream == null))
                 throw new NullReferenceException();
-            }
 
-            foreach (var item in dictionary) {
-                HashAlgorithm algorithm = HashAlgorithm.Create(item.Value);
-                byte[] hashValue = algorithm.ComputeHash(fileStream);
-                CreateTextBlock(item.Key).Text = item.Value + ": " + ConvertBytesToString(hashValue);
-            }
+            if (algorithm == null)
+                throw new NullReferenceException();
+
+            hashValue = algorithm.ComputeHash(fileStream);
+
+            CreateTextBlock(key).Text = value + ": " + ConvertBytesToString(hashValue);
+
+
             fileStream.Dispose();
         }
 
-        private string ConvertBytesToString(Byte[] bytes) {
-            string hashValue = null;
+        private string ConvertBytesToString(byte[] bytes) {
+            var hashValue = "";
 
             // Convert bytes to string in hex format
-            foreach (Byte byteIndex in bytes) 
+            foreach (var byteIndex in bytes)
                 hashValue += byteIndex.ToString("x2");
-            
+
             return hashValue;
         }
 
