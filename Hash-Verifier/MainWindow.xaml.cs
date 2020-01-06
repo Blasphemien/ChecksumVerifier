@@ -22,8 +22,9 @@ namespace Hash_Verifier {
 
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+
                 // Get data that is in the windows drop format
-                var data = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string[] data = (string[]) e.Data.GetData(DataFormats.FileDrop);
 
                 // Gets the check boxes that are checked
                 var hashOptions = GetHashOptions().ToList();
@@ -50,8 +51,8 @@ namespace Hash_Verifier {
         }
 
         private IEnumerable<CheckBox> GetHashOptions() {
-            var hashOptions =
-                checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+            IEnumerable<CheckBox> hashOptions = checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+
             return hashOptions;
         }
 
@@ -114,7 +115,7 @@ namespace Hash_Verifier {
 
             // Convert bytes to string in hex format
             foreach (var byteIndex in bytes)
-                hashValue += byteIndex.ToString("x2");
+                hashValue += byteIndex.ToString("x2").ToUpper();
 
             return hashValue;
         }
