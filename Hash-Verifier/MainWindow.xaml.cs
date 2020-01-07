@@ -29,11 +29,15 @@ namespace Hash_Verifier {
                 // Gets the check boxes that are checked
                 List<CheckBox> hashOptions = GetHashOptions().ToList();
 
-                if (!hashOptions.Any())
-                    throw new NullReferenceException();
-                if (data == null)
-                    throw new NullReferenceException();
-
+                if (!hashOptions.Any()) {
+                    MessageBox.Show("No check boxes selected");
+                    throw new NullReferenceException("No check boxes selected");
+                }
+                if (data == null) {
+                    MessageBox.Show("Data must be in windows drop format");
+                    throw new NullReferenceException("Data must be in windows drop format");
+                }
+                
                 GetHash(data[0], hashOptions);
             }
         }
@@ -67,6 +71,8 @@ namespace Hash_Verifier {
                     algorithmsDictionary.Add("textBox_sha256", "SHA256");
                 if (item.Name == "checkBox_sha1") 
                     algorithmsDictionary.Add("textBox_sha1", "SHA1");
+                if (item.Name == "checkBox_sha512")
+                    algorithmsDictionary.Add("textBox_sha512", "SHA512");
             }
 
             foreach (KeyValuePair<string, string> item in algorithmsDictionary) {
