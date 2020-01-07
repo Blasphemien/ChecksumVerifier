@@ -11,10 +11,10 @@ namespace Hash_Verifier {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+        private readonly Hash _hash = new Hash();
         public MainWindow() {
             InitializeComponent();
         }
-
 
         // Main function
         private void FileDropped(object sender, DragEventArgs e) {
@@ -27,7 +27,7 @@ namespace Hash_Verifier {
                 string[] data = (string[]) e.Data.GetData(DataFormats.FileDrop);
 
                 // Gets the check boxes that are checked
-                var hashOptions = GetHashOptions().ToList();
+                List<CheckBox> hashOptions = GetHashOptions().ToList();
 
                 if (!hashOptions.Any())
                     throw new NullReferenceException();
@@ -40,84 +40,39 @@ namespace Hash_Verifier {
 
         // Creates a new textbox dynamically
         private TextBlock CreateTextBlock(string name) {
-            var textBlock = new TextBlock();
-            textBlock.Width = double.NaN;
-            textBlock.VerticalAlignment = VerticalAlignment.Top;
-            textBlock.HorizontalAlignment = HorizontalAlignment.Left;
-            textBlock.TextWrapping = TextWrapping.NoWrap;
-            textBlock.Name = name;
+            var textBlock = new TextBlock {
+                Width = double.NaN,
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                TextWrapping = TextWrapping.NoWrap,
+                Name = name
+            };
             textBoxStack.Children.Add(textBlock);
             return textBlock;
         }
 
         private IEnumerable<CheckBox> GetHashOptions() {
             IEnumerable<CheckBox> hashOptions = checkBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
-
             return hashOptions;
         }
 
         private void GetHash(string data, List<CheckBox> hashOptions) {
-            var algorithms = new Dictionary<string, string>();
-
+            Dictionary<string, string> algorithmsDictionary = new Dictionary<string, string>();
+            
             // Gets checksums for for selected types
-            foreach (var item in hashOptions) {
-                if (item.Name == "checkBox_md5")
-                    algorithms.Add("textBox_MD5", "MD5");
-                if (item.Name == "checkBox_sha256")
-                    algorithms.Add("textBox_SHA256", "SHA256");
-                if (item.Name == "checkBox_sha1")
-                    algorithms.Add("textBox_SHA1", "SHA1");
+            foreach (CheckBox item in hashOptions) {
+                if (item.Name == "checkBox_md5") 
+                    algorithmsDictionary.Add("textBox_md5", "MD5");
+                if (item.Name == "checkBox_sha256") 
+                    algorithmsDictionary.Add("textBox_sha256", "SHA256");
+                if (item.Name == "checkBox_sha1") 
+                    algorithmsDictionary.Add("textBox_sha1", "SHA1");
             }
 
-            if (!algorithms.Any())
-                throw new NullReferenceException();
-
-            foreach (var item in algorithms)
-                CalculateHash(data, item.Key, item.Value);
-        }
-
-        private void CalculateHash(string data, string key, string value) {
-            FileStream fileStream = null;
-            FileInfo fileInfo = null;
-            byte[] hashValue = null;
-            var algorithm = HashAlgorithm.Create(value);
-
-            try {
-                // Get the data from the file
-                fileInfo = new FileInfo(data);
-                fileStream = fileInfo.Open(FileMode.Open);
+            foreach (KeyValuePair<string, string> item in algorithmsDictionary) {
+                CreateTextBlock(item.Key).Text = _hash.CalculateHash(data, item.Value);
             }
-            catch (IOException ex) {
-                MessageBox.Show(ex.ToString());
-            }
-
-
-            catch (UnauthorizedAccessException ex) {
-                MessageBox.Show(ex.ToString());
-            }
-
-            if ((fileInfo == null) | (fileStream == null))
-                throw new NullReferenceException();
-
-            if (algorithm == null)
-                throw new NullReferenceException();
-
-            hashValue = algorithm.ComputeHash(fileStream);
-
-            CreateTextBlock(key).Text = value + ": " + ConvertBytesToString(hashValue);
-
-
-            fileStream.Dispose();
-        }
-
-        private string ConvertBytesToString(byte[] bytes) {
-            var hashValue = "";
-
-            // Convert bytes to string in hex format
-            foreach (var byteIndex in bytes)
-                hashValue += byteIndex.ToString("x2").ToUpper();
-
-            return hashValue;
+            
         }
 
         private void ClearTextBlock() {
