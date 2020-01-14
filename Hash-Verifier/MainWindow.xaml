@@ -15,12 +15,12 @@
             <CheckBox Content="SHA512" x:Name="checkBox_sha512" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.634,-1.931"/>
         </StackPanel>
         <StackPanel Name="StackPanelVerify" Orientation="Horizontal" Margin="0,246,0,252">
-            <CheckBox Name="CheckBoxVerify" VerticalAlignment="top" Margin="34,2,0,0" Height="16"/>
-            <TextBox x:Name="TextBoxVerify"  VerticalAlignment="Top" TextWrapping="Wrap" Text="TextBox" Width="580" Margin="130,0,0,0"/>
+            <CheckBox Name="CheckBoxVerify" Content="Verify Hash" Click="CheckBoxVerify_OnClick_" VerticalAlignment="top" Margin="34,2,0,0" Height="16"/>
+            <TextBox x:Name="TextBoxVerify" IsEnabled="false" VerticalAlignment="Top" TextWrapping="Wrap" Width="580" Margin="15,0,0,0" RenderTransformOrigin="0.026,0.639"/>
         </StackPanel>
-        <StackPanel Name="StackPanelResults" Margin="80,362,80,55" Width="auto">
-            <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Width="auto" Height="220">
-                <StackPanel x:Name="TextBlockResults" Height="212" Width="auto"></StackPanel>
+        <StackPanel Margin="34,316,34,16" Width="auto">
+            <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="visible" Height="257" Margin="108,0,108,0">
+                <StackPanel x:Name="StackPanelResults" Height="242" Width="auto"></StackPanel>
             </ScrollViewer>
         </StackPanel>
     </Grid>
