@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 
 namespace Hash_Verifier {
     /// <summary>
@@ -95,10 +96,13 @@ namespace Hash_Verifier {
 
             //  Loop throuh each of the hash result text blocks
             foreach (TextBlock textBlock in results) {
+                string trimmedHash = textBlock.Text.Substring(textBlock.Text.IndexOf(' ') + 1);
                 // Loop through the algorithms dictionary and check if its value equals the hash result
                 foreach (KeyValuePair<string, string> item in algorithmsDic) {
-                    if (textBlock.Name == item.Key && textBlock.Text == TextBoxVerify.Text) {
+                    if (textBlock.Name == item.Key && trimmedHash == TextBoxVerify.Text.Trim()) {
                         result = item.Value + " matches";
+                    } else {
+                        result = "WARNING! " + item.Value + " DOES NOT MATCH!";
                     }
                 }
             }
