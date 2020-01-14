@@ -25,16 +25,11 @@ namespace Hash_Verifier {
 
             // Check if the data matches the windows drop format
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-
-                // Get data that is in the windows drop format
                 string[] data = (string[]) e.Data.GetData(DataFormats.FileDrop);
-
                 List<CheckBox> selectedAlgorithms = GetSelectedHashAlgorithms().ToList();
                 Dictionary<string, string> algorithmsDictionary = GetAlgorithmsDictionary(selectedAlgorithms);
-
                 if (data == null) 
                     MessageBox.Show("Data must be in windows drop format");
-
                 GetHash(data[0], algorithmsDictionary);
             }
         }
@@ -62,9 +57,10 @@ namespace Hash_Verifier {
         }
 
         private Dictionary<string, string> GetAlgorithmsDictionary(List<CheckBox> hashOptions) {
+            // Pairs algorithm textboxes with their algorithm type
             Dictionary<string, string> algorithmsDictionary = new Dictionary<string, string>();
 
-            // Gets checksums for for selected types
+            // Adds the corresponding textboxes so we can loop through the results and their algorithm types later
             foreach (CheckBox item in hashOptions) {
                 if (item.Name == "checkBox_md5")
                     algorithmsDictionary.Add("textBox_md5", "MD5");
@@ -79,35 +75,33 @@ namespace Hash_Verifier {
         }
 
         private void GetHash(string data, Dictionary<string, string> algorithmsDictionary) {
-            foreach (KeyValuePair<string, string> item in algorithmsDictionary) {
+            foreach (KeyValuePair<string, string> item in algorithmsDictionary) 
                CreateTextBlock(item.Key).Text = _hash.CalculateHash(data, item.Value);
-            }
+            
             if (CheckBoxVerify.IsChecked == true && string.IsNullOrEmpty(TextBoxVerify.Text))
                 MessageBox.Show("Enter a hash to verify against");
-            else {
+            else 
                 MessageBox.Show(VerifyHash());
-            }
         }
 
         private string VerifyHash() {
-            string result = null;
-            List<TextBlock> results = GetResultTextBlocks().ToList();
-            Dictionary<string, string> algorithmsDic = GetAlgorithmsDictionary(GetSelectedHashAlgorithms().ToList());
+            List<TextBlock> resultsList = GetResultTextBlocks().ToList();
+            Dictionary<string, string> algorithmsDictionary = GetAlgorithmsDictionary(GetSelectedHashAlgorithms().ToList());
 
             //  Loop throuh each of the hash result text blocks
-            foreach (TextBlock textBlock in results) {
-                string trimmedHash = textBlock.Text.Substring(textBlock.Text.IndexOf(' ') + 1);
-                // Loop through the algorithms dictionary and check if its value equals the hash result
-                foreach (KeyValuePair<string, string> item in algorithmsDic) {
-                    if (textBlock.Name == item.Key && trimmedHash == TextBoxVerify.Text.Trim()) {
-                        result = item.Value + " matches";
-                    } else {
-                        result = "WARNING! " + item.Value + " DOES NOT MATCH!";
+            foreach (TextBlock textBlockResult in resultsList) {
+                string trimmedHash = textBlockResult.Text.Substring(textBlockResult.Text.IndexOf(' ') + 1);
+
+                // Gets the corresponding algorithm types of the textBlocks from the dictionary
+                // Checks if the hashed result matches the users input
+                // Dynamically print the algorithm that matches
+                foreach (KeyValuePair<string, string> item in algorithmsDictionary) {
+                    if (textBlockResult.Name == item.Key && trimmedHash == TextBoxVerify.Text.Trim()) {
+                        return item.Value + " matches";
                     }
                 }
             }
-
-            return result;
+            return "WARNING! NO HASHES MATCH!";
         }
 
         private void ClearTextBlock() {
