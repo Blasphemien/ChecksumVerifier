@@ -64,9 +64,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Hash.cs" />
-    <Compile Include="HashMD5.cs" />
-    <Compile Include="HashSHA1.cs" />
-    <Compile Include="HashSHA256.cs" />
     <Compile Include="iHash.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

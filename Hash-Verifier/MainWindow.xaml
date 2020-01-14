@@ -5,19 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hash_Verifier"
         mc:Ignorable="d"
-        Title="Checksum Verifier" Height="450" Width="800" Background="White" ResizeMode="NoResize">
+        Title="Checksum Verifier" Height="636.7" Width="800" Background="White" ResizeMode="NoResize">
     <Grid Name="myGrid">
         <Label Content="Drop Files Here" HorizontalAlignment="center" Margin="153,10,154,196" VerticalAlignment="top" Height="213" Width="485" Background="#FFEDABAB" AllowDrop="True" Drop="FileDropped"/>
-        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Margin="153,254,144,10" Width="auto" Height="155">
-            <StackPanel Width="auto" Name="textBoxStack">
-                
-            </StackPanel>
-        </ScrollViewer>
-        <StackPanel Name="checkBoxStack">
+        <StackPanel Name="CheckBoxStack" Margin="0,0,678,387">
             <CheckBox Content="MD5" Name="checkBox_md5" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="SHA1" Name="checkBox_sha1" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="SHA256" Name="checkBox_sha256" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.634,-1.931"/>
             <CheckBox Content="SHA512" x:Name="checkBox_sha512" HorizontalAlignment="Left" Margin="34,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.634,-1.931"/>
+        </StackPanel>
+        <StackPanel Name="StackPanelVerify" Orientation="Horizontal" Margin="0,246,0,252">
+            <CheckBox Name="CheckBoxVerify" VerticalAlignment="top" Margin="34,2,0,0" Height="16"/>
+            <TextBox x:Name="TextBoxVerify"  VerticalAlignment="Top" TextWrapping="Wrap" Text="TextBox" Width="580" Margin="130,0,0,0"/>
+        </StackPanel>
+        <StackPanel Name="StackPanelResults" Margin="80,362,80,55" Width="auto">
+            <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="Visible" Width="auto" Height="220">
+                <StackPanel x:Name="TextBlockResults" Height="212" Width="auto"></StackPanel>
+            </ScrollViewer>
         </StackPanel>
     </Grid>
 </Window>
