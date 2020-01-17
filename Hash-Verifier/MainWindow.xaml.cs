@@ -13,63 +13,51 @@ namespace Hash_Verifier
     public partial class MainWindow : Window
     {
         private readonly Hash _hash = new Hash();
-        private bool _verifyHash = false;
+     
         public MainWindow()
         {
             InitializeComponent();
         }
 
+
+        private string[] GetDataFromFile(DragEventArgs file) 
+        {
+            if (file.Data.GetDataPresent(DataFormats.FileDrop))
+                return (string[]) file.Data.GetData(DataFormats.FileDrop);
+
+            return null;
+        }
+
         // Main function
         private void FileDropped(object sender, DragEventArgs e)
         {
-            if (!GetSelectedHashAlgorithms().Any())
-            {
-                MessageBox.Show("You must selected atleast one algorithm");
+            // Validate controls before proceeding
+            if (!ValidateStackPanelVerify()) 
                 return;
-            }
-            if (CheckBoxVerify.IsChecked == true && string.IsNullOrEmpty(TextBoxVerify.Text))
-            {
-                MessageBox.Show("You have indicated you would like to validate the resulting hash. Please enter a hash to verify");
+            if (!ValidateCheckBoxes())
                 return;
-            }
 
             ClearTextBlock();
 
-            // Check if the data matches the windows drop format
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            try
             {
-                string[] data = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-                // Saftey checks to aviod exceptions
-                if (data == null)
-                {
-                    MessageBox.Show("No data for the selected file found!");
-                    return;
-                }
-
-                Dictionary<string, string> algorithmsDictionary = GetAlgorithmsDictionary(GetSelectedHashAlgorithms().ToList());
-                try 
-                {
-                    GetHash(data[0], algorithmsDictionary);
-                } 
-                catch (FileNotFoundException ex) 
-                {
-                    MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
-                }
-                catch (IOException ex)
-                {
-                    MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
-                }
+                GetHash(GetDataFromFile(e));
             }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message + "\n\n" + "Stack Trace:" + "\n" + ex.StackTrace);
+            }
+
         }
 
-        private void GetFileData() {
-
-        }
         private TextBox CreateTextBox(string name)
         {
             TextBox textBox = new TextBox
@@ -86,21 +74,20 @@ namespace Hash_Verifier
         }
         private IEnumerable<CheckBox> GetSelectedHashAlgorithms() 
         {
-            IEnumerable<CheckBox> hashOptions = CheckBoxStack.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
+            IEnumerable<CheckBox> hashOptions = StackPanelHashOptions.Children.OfType<CheckBox>().Where(x => x.IsChecked == true);
             return hashOptions;
         }
-        private IEnumerable<TextBlock> GetResultTextBlocks()
+        private IEnumerable<TextBox> GetResultTextBlocks()
         {
-            IEnumerable<TextBlock> textBlocks = StackPanelResults.Children.OfType<TextBlock>();
+            IEnumerable<TextBox> textBlocks = StackPanelResults.Children.OfType<TextBox>();
             return textBlocks;
         }
-        private Dictionary<string, string> GetAlgorithmsDictionary(List<CheckBox> hashOptions)
-        {
-            // Pairs algorithm textboxes with their algorithm type
+        private Dictionary<string, string> GetAlgorithmsDictionary() {
+
             Dictionary<string, string> algorithmsDictionary = new Dictionary<string, string>();
 
             // Adds the corresponding textBlocks so we can loop through the results and their algorithm types later
-            foreach (CheckBox item in hashOptions)
+            foreach (CheckBox item in GetSelectedHashAlgorithms().ToList())
             {
                 if (item.Name == "checkBox_md5")
                     algorithmsDictionary.Add("textBlock_md5", "MD5");
@@ -113,36 +100,47 @@ namespace Hash_Verifier
             }
             return algorithmsDictionary;
         }
-        private void GetHash(string data, Dictionary<string, string> algorithmsDictionary) 
+        private void GetHash(string[] data) 
         {
-            foreach (KeyValuePair<string, string> item in algorithmsDictionary) 
-            {
-                string hashValue = _hash.CalculateHash(data, item.Value);
-                CreateTextBox(item.Key).Text = hashValue;
-            }
+            foreach (KeyValuePair<string, string> item in GetAlgorithmsDictionary())
+                CreateTextBox(item.Key).Text = _hash.CalculateHash(data[0], item.Value);
             
-            if (_verifyHash)
+            if (CheckBoxVerify.IsChecked == true)
                 MessageBox.Show(VerifyHash());
+        }
+
+        private bool ValidateCheckBoxes() {
+            if (!GetSelectedHashAlgorithms().Any()) {
+                MessageBox.Show("Please select the type(s) of has you would like to calculate");
+                return false;
+            }
+            return true;
+        }
+
+        private bool ValidateStackPanelVerify()
+        {
+            if (CheckBoxVerify.IsChecked == true && string.IsNullOrEmpty(TextBoxVerify.Text))
+            {
+                MessageBox.Show("You have indicated you would like to validate the resulting hash. Please enter a hash to verify");
+                return false;
+            }
+            return true;
         }
 
         private string VerifyHash() {
 
             //  Loop through each of the hash result text blocks
-            List<TextBlock> resultsList = GetResultTextBlocks().ToList();
-            foreach (TextBlock textBlockResult in resultsList)
+            foreach (TextBox textBoxResult in GetResultTextBlocks().ToList())
             {
-                string trimmedHash = textBlockResult.Text.Substring(textBlockResult.Text.IndexOf(' ') + 1);
+                string trimmedHash = textBoxResult.Text.Substring(textBoxResult.Text.IndexOf(' ') + 1);
 
                 // Gets the corresponding algorithm types of the textBlocks from the dictionary
                 // Checks if the hashed result matches the users input
                 // Dynamically print the algorithm that matches
-                Dictionary<string, string> algorithmsDictionary = GetAlgorithmsDictionary(GetSelectedHashAlgorithms().ToList());
-                foreach (KeyValuePair<string, string> item in algorithmsDictionary)
+                foreach (KeyValuePair<string, string> item in GetAlgorithmsDictionary())
                 {
-                    if (textBlockResult.Name == item.Key && trimmedHash == TextBoxVerify.Text.Trim())
-                    {
+                    if (textBoxResult.Name == item.Key && trimmedHash == TextBoxVerify.Text.Trim())
                         return item.Value + " matches";
-                    }
                 }
             }
             return "WARNING! NO HASHES MATCH!";
@@ -153,18 +151,12 @@ namespace Hash_Verifier
             StackPanelResults.Children.Clear();
         }
 
-        private void CheckBoxVerify_OnClick_(object sender, RoutedEventArgs e)
-        {
+        private void CheckBoxVerify_OnClick_(object sender, RoutedEventArgs e) {
             if (CheckBoxVerify.IsChecked == true)
-            {
                 TextBoxVerify.IsEnabled = true;
-                _verifyHash = true;
-            }
-            else
-            {
+                
+            if (CheckBoxVerify.IsChecked == false)
                 TextBoxVerify.IsEnabled = false;
-                _verifyHash = false;
-            }
         }
     }
 }
