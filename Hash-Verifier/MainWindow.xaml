@@ -18,8 +18,8 @@
             <CheckBox Name="CheckBoxVerify" Content="Verify Hash" Click="CheckBoxVerify_OnClick_" VerticalAlignment="top" Margin="34,2,0,0" Height="16"/>
             <TextBox x:Name="TextBoxVerify" IsEnabled="false" VerticalAlignment="Top" TextWrapping="Wrap" Width="580" Margin="15,0,0,0" RenderTransformOrigin="0.026,0.639"/>
         </StackPanel>
-        <StackPanel Margin="34,316,34,16" Width="auto">
-            <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="visible" Height="257" Margin="108,0,108,0">
+        <StackPanel Margin="34,316,34,16" Width="auto" Opacity="0.5">
+            <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="visible" Height="257" Margin="108,0,108,0" BorderBrush="Black" BorderThickness="202,0,20,0">
                 <StackPanel x:Name="StackPanelResults" Height="242" Width="auto"></StackPanel>
             </ScrollViewer>
         </StackPanel>

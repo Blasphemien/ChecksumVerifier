@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows.Controls;
@@ -7,16 +8,23 @@ namespace Hash_Verifier
 {
     class Hash : iHash
     {
-
         public string CalculateHash(string data, string selectedAlgorithm)
         {
-            FileStream fileStream = null;
-            FileInfo fileInfo = new FileInfo(data);
-            fileStream = fileInfo.Open(FileMode.Open);
             HashAlgorithm algorithm = HashAlgorithm.Create(selectedAlgorithm);
-            byte[] hashBytes = algorithm.ComputeHash(fileStream);
-            fileStream.Dispose();
-            return selectedAlgorithm + ": " + ConvertBytesToString(hashBytes);
+
+            if (algorithm != null) {
+                FileInfo fileInfo = new FileInfo(data);
+
+                FileStream fileStream = fileInfo.Open(FileMode.Open);
+
+                byte[] hashBytes = algorithm.ComputeHash(fileStream);
+
+                fileStream.Close();
+
+                return selectedAlgorithm + ": " + ConvertBytesToString(hashBytes);
+            }
+
+            return "Could not create " + "\"" + selectedAlgorithm + "\"";
         }
         public string ConvertBytesToString(byte[] hashBytes)
         {
